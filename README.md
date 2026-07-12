@@ -9,7 +9,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io)
+[![Prisma](https://img.shields.io/badge/Prisma-PostgreSQL-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io)
 [![Auth.js](https://img.shields.io/badge/Auth.js-v5-6E56CF?style=flat-square)](https://authjs.dev)
 [![Framer Motion](https://img.shields.io/badge/Framer%20Motion-13-EF3F92?style=flat-square&logo=framer&logoColor=white)](https://www.framer.com/motion/)
 
@@ -21,7 +21,7 @@
 
 Tack is a small, opinionated project board: boards → lists → cards, dragged between lists with the mouse or keyboard. It's built to look deliberate with almost no UI — one accent color, hairline borders, a mono-label layer for structure, and a single signature detail (the "tack rail," a pine underline that fills a list header only when it holds cards).
 
-No REST layer, no client-side data-fetching library. Every mutation is a **Server Action**, backed by Prisma against SQLite.
+No REST layer, no client-side data-fetching library. Every mutation is a **Server Action**, backed by Prisma against Postgres.
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ No REST layer, no client-side data-fetching library. Every mutation is a **Serve
 | Styling | Tailwind CSS v4, design tokens in `globals.css` |
 | Motion | Framer Motion (landing page only — the board's drag physics stay on `dnd-kit`'s own transforms) |
 | Auth | Auth.js v5 — Google OAuth + Credentials |
-| Database | Prisma 5 + SQLite |
+| Database | Prisma 5 + PostgreSQL |
 | Drag & drop | `@dnd-kit/core` + `@dnd-kit/sortable` |
 | Icons | `lucide-react` |
 | Mutations | Server Actions exclusively — no REST endpoints, no React Query |
@@ -89,12 +89,26 @@ Credentials login works with zero setup. To also enable "Continue with Google":
 
 ### Database
 
+Postgres (works locally and in production against the same connection — no local DB engine to install). Get a free instance from [Neon](https://neon.tech) or [Supabase](https://supabase.com), or provision Vercel Postgres from your Vercel project's Storage tab.
+
 ```bash
-npx prisma db push   # sync schema.prisma -> dev.db
+# DATABASE_URL in .env.local, then:
+npx prisma db push   # sync schema.prisma -> your database
 npm run seed          # seed a demo board
 ```
 
-SQLite file lives at `prisma/dev.db` (git-ignored). Schema in `prisma/schema.prisma`.
+Schema in `prisma/schema.prisma`.
+
+## Deployment (Vercel)
+
+1. **Database first.** Create a Postgres instance (Neon/Supabase free tier, or Vercel Postgres) and copy its connection string.
+2. Push the schema against it: set `DATABASE_URL` in `.env.local` to that string, run `npx prisma db push`, then `npm run seed` if you want the demo board.
+3. `vercel login`, then `vercel link` from the project root.
+4. Set environment variables on the Vercel project (`vercel env add <NAME> production`, or via the dashboard): `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `DATABASE_URL`.
+5. In the [Google Cloud console](https://console.cloud.google.com/apis/credentials), add your production callback to the OAuth client's authorized redirect URIs: `https://<your-domain>/api/auth/callback/google`.
+6. `vercel --prod`.
+
+`trustHost: true` in `src/auth.ts` means Auth.js trusts whatever `Host` header Vercel forwards — no `AUTH_URL` pinning needed.
 
 ## Project structure
 
