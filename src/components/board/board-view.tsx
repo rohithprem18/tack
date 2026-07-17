@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useOptimistic, useState, useTransition } from "react";
+import { useEffect, useMemo, useOptimistic, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   DndContext,
@@ -121,9 +121,27 @@ export function BoardView({
   const [optimisticLists, applyOptimistic] = useOptimistic(lists, listsReducer);
   const [activeCard, setActiveCard] = useState<CardData | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const membersById = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
+
+  // Poll for other members' changes instead of requiring a hard refresh.
+  // Skipped mid-drag, mid-mutation, or while the tab is in the background —
+  // a refresh landing during any of those would yank state out from under
+  // dnd-kit or clobber an in-flight optimistic update.
+  const skipRef = useRef(false);
+  useEffect(() => {
+    skipRef.current = activeCard !== null || isPending;
+  }, [activeCard, isPending]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible" && !skipRef.current) {
+        router.refresh();
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [router]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } })

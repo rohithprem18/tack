@@ -170,6 +170,15 @@ One accent color, no gradients, no shadow at rest — the only shadow in the app
 
 ## What's out of scope
 
-- Real-time multi-user sync (a hard refresh shows other members' changes).
 - List reordering / deletion — lists are append-only; only cards drag between them.
 - Email verification and password reset.
+
+## Live sync
+
+Other members' changes show up without a manual refresh — the board polls every 3s via `router.refresh()` and re-renders with fresh server data. No websockets, no third-party pub/sub account to wire up. It's suspended automatically:
+
+- while the browser tab is in the background (`document.visibilityState`),
+- mid-drag, so an incoming refresh can never yank a card out from under `dnd-kit`,
+- while any of your own mutations are still in flight (`useTransition`'s pending state).
+
+This trades true push-based instancy for zero added infrastructure — good enough at this scale; a Postgres `LISTEN/NOTIFY` bridge or a hosted pub/sub (Pusher, Ably, Supabase Realtime) would get changes down to sub-second if that's ever needed.
