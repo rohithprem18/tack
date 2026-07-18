@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 import { Textarea } from "@/components/input";
 import { cn } from "@/lib/utils";
 
@@ -33,9 +34,11 @@ export function AddInline({
 
   if (!open) {
     return (
-      <button
+      <motion.button
         type="button"
         onClick={() => setOpen(true)}
+        whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 0.97 }}
         className={cn(
           "flex items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-sm text-muted transition-colors duration-[120ms] ease-out hover:bg-tint hover:text-ink",
           className
@@ -43,7 +46,7 @@ export function AddInline({
       >
         <Plus size={14} strokeWidth={1.75} />
         {label}
-      </button>
+      </motion.button>
     );
   }
 

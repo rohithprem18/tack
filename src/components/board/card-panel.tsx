@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Input, Textarea } from "@/components/input";
 import { Button } from "@/components/button";
 import type { CardData, MemberData } from "@/components/board/types";
@@ -34,25 +35,37 @@ export function CardPanel({
 
   return (
     <>
-      <button
+      <motion.button
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className="fixed inset-0 z-40 bg-ink/10 transition-opacity duration-[120ms] ease-out"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+        className="fixed inset-0 z-40 bg-ink/10"
       />
-      <aside className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[380px] flex-col border-l border-rule bg-surface p-5">
+      <motion.aside
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[380px] flex-col border-l border-rule bg-surface p-5"
+      >
         <div className="mb-4 flex items-center justify-between">
           <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
             Card
           </span>
-          <button
+          <motion.button
             type="button"
             onClick={onClose}
             aria-label="Close panel"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
             className="rounded-md p-1 text-muted transition-colors duration-[120ms] ease-out hover:bg-tint hover:text-ink"
           >
             <X size={16} strokeWidth={1.75} />
-          </button>
+          </motion.button>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -116,7 +129,7 @@ export function CardPanel({
             Delete card
           </Button>
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 }

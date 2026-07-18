@@ -1,8 +1,24 @@
+"use client";
+
 import Link from "next/link";
+import { motion, MotionConfig } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
 
 type Variant = "primary" | "quiet" | "ghost";
+
+// framer-motion's event props (onAnimationStart, onDrag, ...) collide with
+// React's native DOM event types of the same name — drop the native ones.
+type MotionSafeButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "onAnimationStart" | "onAnimationEnd" | "onAnimationIteration" | "onDrag" | "onDragStart" | "onDragEnd"
+>;
+type MotionSafeAnchorProps = Omit<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  "onAnimationStart" | "onAnimationEnd" | "onAnimationIteration" | "onDrag" | "onDragStart" | "onDragEnd"
+>;
+
+const MotionLink = motion.create(Link);
 
 function buttonClasses(variant: Variant, className?: string) {
   return cn(
@@ -15,12 +31,26 @@ function buttonClasses(variant: Variant, className?: string) {
   );
 }
 
+// Every button/link built on top of this gets the same tap feedback for
+// free — centralizing it here means "add motion everywhere" is one change,
+// not forty. Kept off the board's draggable cards on purpose: their scale
+// transform would fight dnd-kit's own drag transform.
+const tapFeedback = { whileHover: { scale: 1.015 }, whileTap: { scale: 0.97 } };
+
 export function Button({
   variant = "primary",
   className,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
-  return <button className={buttonClasses(variant, className)} {...props} />;
+}: MotionSafeButtonProps & { variant?: Variant }) {
+  return (
+    <MotionConfig reducedMotion="user">
+      <motion.button
+        className={buttonClasses(variant, className)}
+        {...tapFeedback}
+        {...props}
+      />
+    </MotionConfig>
+  );
 }
 
 export function ButtonLink({
@@ -28,11 +58,18 @@ export function ButtonLink({
   className,
   href,
   ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+}: MotionSafeAnchorProps & {
   variant?: Variant;
   href: string;
 }) {
   return (
-    <Link href={href} className={buttonClasses(variant, className)} {...props} />
+    <MotionConfig reducedMotion="user">
+      <MotionLink
+        href={href}
+        className={buttonClasses(variant, className)}
+        {...tapFeedback}
+        {...props}
+      />
+    </MotionConfig>
   );
 }

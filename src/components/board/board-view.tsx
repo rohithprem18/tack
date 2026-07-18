@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useOptimistic, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { AnimatePresence } from "framer-motion";
 import {
   DndContext,
   DragOverlay,
@@ -229,8 +231,15 @@ export function BoardView({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between gap-3 border-b border-rule px-6 py-4 md:px-10">
-        <div className="flex min-w-0 items-center gap-4">
+        <div className="flex min-w-0 items-center gap-2">
           <Logo className="shrink-0" />
+          <span className="shrink-0 text-rule">/</span>
+          <Link
+            href="/boards"
+            className="shrink-0 rounded-md px-1.5 py-0.5 text-sm text-muted transition-colors duration-[120ms] ease-out hover:bg-tint hover:text-ink"
+          >
+            Boards
+          </Link>
           <span className="shrink-0 text-rule">/</span>
           <h1 className="truncate text-sm font-medium text-ink">{boardTitle}</h1>
         </div>
@@ -241,6 +250,7 @@ export function BoardView({
 
       <main className="flex-1 overflow-x-auto px-6 py-6 md:px-10">
         <DndContext
+          id={`dnd-${boardId}`}
           sensors={sensors}
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
@@ -279,16 +289,18 @@ export function BoardView({
         </DndContext>
       </main>
 
-      {selectedCard && (
-        <CardPanel
-          key={selectedCard.id}
-          card={selectedCard}
-          members={members}
-          onClose={() => setSelectedCardId(null)}
-          onSave={(data) => handleSaveCard(selectedCard.id, data)}
-          onDelete={() => handleDeleteCard(selectedCard.id)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedCard && (
+          <CardPanel
+            key={selectedCard.id}
+            card={selectedCard}
+            members={members}
+            onClose={() => setSelectedCardId(null)}
+            onSave={(data) => handleSaveCard(selectedCard.id, data)}
+            onDelete={() => handleDeleteCard(selectedCard.id)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

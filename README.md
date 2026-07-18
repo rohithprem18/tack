@@ -45,9 +45,11 @@ No REST layer, no client-side data-fetching library. Every mutation is a **Serve
 - **Google + email/password auth** via Auth.js v5, sessions as JWT.
 - **Boards, lists, cards** with inline "type and hit Enter" creation.
 - **Drag and drop** across and within lists (`dnd-kit`), with optimistic UI — the card moves instantly and only snaps back if the server rejects it.
-- **Card slide-over**: description, assignee, delete — autosaves on blur.
+- **Card slide-over**: description, assignee, delete — autosaves on blur, slides in/out instead of popping.
 - **Invite by email** to add a teammate to a board.
-- **Animated landing page** (Framer Motion) — staggered hero, scroll-triggered board preview, all motion disabled automatically under `prefers-reduced-motion`.
+- **Motion throughout**, not just the landing page: page-to-page transitions, tap/hover feedback on every button, an animated invite popover and card panel — all disabled automatically under `prefers-reduced-motion`, and deliberately kept off the board's draggable cards so it never fights `dnd-kit`'s own transform.
+- **Breadcrumb navigation** (`Tack / Boards / <board title>`) on the board page — no dead end that only the browser's back button can escape.
+- **Live sync** — other members' changes show up without a manual refresh (see below).
 - Keyboard-navigable, focus-visible everywhere, works down to a 375px viewport.
 
 ## Tech stack
@@ -56,7 +58,7 @@ No REST layer, no client-side data-fetching library. Every mutation is a **Serve
 |---|---|
 | Framework | Next.js 16, App Router, TypeScript (strict, no `any`) |
 | Styling | Tailwind CSS v4, design tokens in `globals.css` |
-| Motion | Framer Motion (landing page only — the board's drag physics stay on `dnd-kit`'s own transforms) |
+| Motion | Framer Motion, app-wide — page transitions, button feedback, panel/popover animation |
 | Auth | Auth.js v5 — Google OAuth + Credentials |
 | Database | Prisma 5 + PostgreSQL |
 | Drag & drop | `@dnd-kit/core` + `@dnd-kit/sortable` |
@@ -125,7 +127,8 @@ src/
 ├── components/
 │   ├── board/                 # board view, list column, card, slide-over
 │   ├── landing/                # hero, board preview, header (Framer Motion)
-│   └── ...                    # button, input, avatar, logo primitives
+│   ├── page-transition.tsx     # AnimatePresence wrapper, mounted in the root layout
+│   └── ...                    # button, input, avatar, logo primitives (motion-enabled)
 └── lib/
     ├── actions/                # every mutation — boards, lists, cards, members, auth
     ├── prisma.ts               # PrismaClient singleton
@@ -165,7 +168,8 @@ One accent color, no gradients, no shadow at rest — the only shadow in the app
 - `lucide-react` and `framer-motion` are tree-shaken per-import via `experimental.optimizePackageImports` in `next.config.ts`.
 - Every board mutation resolves membership in a **single** joined Prisma query instead of two round trips.
 - `useOptimistic` covers every board mutation (add/move/edit/delete), not just drag — the UI updates instantly and only reconciles from the server on failure.
-- Framer Motion is scoped to the landing page; the board's drag interactions stay on `dnd-kit`'s GPU-friendly transforms, so the two never fight over the same element.
+- Framer Motion runs app-wide (page transitions, buttons, panels), but is deliberately kept off the board's draggable cards — the two would fight over the same transform. Drag interactions stay on `dnd-kit`'s GPU-friendly transforms alone.
+- `DndContext` is given a stable `id` (`dnd-${boardId}`) — `dnd-kit` otherwise auto-generates its internal accessibility IDs, which differ between server and client render and throw a real hydration mismatch in dev.
 - First-visit-per-route compiles in `next dev` are inherent to Turbopack's on-demand dev compilation — for a true read on production speed, use `npm run build && npm run start`.
 
 ## What's out of scope
