@@ -9,6 +9,7 @@
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
     "screenshot": "node scripts/screenshot.mjs",
+    "audit:responsive": "node scripts/responsive-audit.mjs",
     "postinstall": "prisma generate"
   },
   "prisma": {

@@ -230,10 +230,10 @@ export function BoardView({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between gap-3 border-b border-rule px-6 py-4 md:px-10">
-        <div className="flex min-w-0 items-center gap-2">
-          <Logo className="shrink-0" />
-          <span className="shrink-0 text-rule">/</span>
+      <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-rule px-6 py-4 md:px-10">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <Logo className="hidden shrink-0 sm:inline-block" />
+          <span className="hidden shrink-0 text-rule sm:inline">/</span>
           <Link
             href="/boards"
             className="shrink-0 rounded-md px-1.5 py-0.5 text-sm text-muted transition-colors duration-[120ms] ease-out hover:bg-tint hover:text-ink"

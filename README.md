@@ -42,7 +42,7 @@ No REST layer, no client-side data-fetching library. Every mutation is a **Serve
 
 ## Features
 
-- **Google + email/password auth** via Auth.js v5, sessions as JWT.
+- **Google + email/password auth** via Auth.js v5, sessions as JWT, Google's own multi-color "G" mark on the button.
 - **Boards, lists, cards** with inline "type and hit Enter" creation.
 - **Drag and drop** across and within lists (`dnd-kit`), with optimistic UI — the card moves instantly and only snaps back if the server rejects it.
 - **Card slide-over**: description, assignee, delete — autosaves on blur, slides in/out instead of popping.
@@ -50,7 +50,7 @@ No REST layer, no client-side data-fetching library. Every mutation is a **Serve
 - **Motion throughout**, not just the landing page: page-to-page transitions, tap/hover feedback on every button, an animated invite popover and card panel — all disabled automatically under `prefers-reduced-motion`, and deliberately kept off the board's draggable cards so it never fights `dnd-kit`'s own transform.
 - **Breadcrumb navigation** (`Tack / Boards / <board title>`) on the board page — no dead end that only the browser's back button can escape.
 - **Live sync** — other members' changes show up without a manual refresh (see below).
-- Keyboard-navigable, focus-visible everywhere, works down to a 375px viewport.
+- **Responsive down to a 320px viewport**, audited across 320/375/414/768/1024px — not just eyeballed. Keyboard-navigable, focus-visible everywhere.
 
 ## Tech stack
 
@@ -186,3 +186,10 @@ Other members' changes show up without a manual refresh — the board polls ever
 - while any of your own mutations are still in flight (`useTransition`'s pending state).
 
 This trades true push-based instancy for zero added infrastructure — good enough at this scale; a Postgres `LISTEN/NOTIFY` bridge or a hosted pub/sub (Pusher, Ably, Supabase Realtime) would get changes down to sub-second if that's ever needed.
+
+## Responsive design
+
+Audited with `npm run audit:responsive` — captures every page at 320/375/414/768/1024px against a live build and rechecks after each fix, rather than trusting a single 375px eyeball pass. Caught and fixed two real breakage points that a cursory look would've missed:
+
+- The board header's breadcrumb + avatar stack + invite button didn't wrap, so at 320px the board title got squeezed to zero width and disappeared entirely. Fixed: the logo and avatar stack hide below `sm`, the invite button drops to icon-only, and the header wraps if it still doesn't fit — the title is never sacrificed.
+- The "New board" inline form kept its input and both buttons on one row regardless of width, wrapping "Create board"'s own label mid-word on narrow screens. Fixed: it wraps to its own row below the input under `sm`.

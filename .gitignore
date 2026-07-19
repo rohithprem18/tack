@@ -45,5 +45,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
-.env*
+# throwaway output from scripts/responsive-audit.mjs
+docs/audit/

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
+import { GoogleIcon } from "@/components/google-icon";
 import type { AuthActionState } from "@/lib/actions/auth";
 
 export function AuthForm({
@@ -22,7 +23,8 @@ export function AuthForm({
   return (
     <div className="flex flex-col gap-5">
       <form action={googleAction}>
-        <Button variant="ghost" className="w-full" type="submit">
+        <Button variant="ghost" className="w-full gap-2.5" type="submit">
+          <GoogleIcon />
           Continue with Google
         </Button>
       </form>

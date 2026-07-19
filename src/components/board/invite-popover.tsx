@@ -37,7 +37,7 @@ export function InvitePopover({
   return (
     <div className="relative" ref={ref}>
       <div className="flex items-center gap-2">
-        <div className="flex -space-x-2">
+        <div className="hidden -space-x-2 sm:flex">
           {members.slice(0, 5).map((member) => (
             <Avatar
               key={member.id}
@@ -49,12 +49,13 @@ export function InvitePopover({
         <motion.button
           type="button"
           onClick={() => setOpen((v) => !v)}
+          aria-label="Invite a member"
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.97 }}
           className="flex items-center gap-1.5 rounded-md border border-rule px-2.5 py-1.5 text-sm text-ink transition-colors duration-[120ms] ease-out hover:bg-tint"
         >
           <UserPlus size={14} strokeWidth={1.75} />
-          Invite
+          <span className="hidden sm:inline">Invite</span>
         </motion.button>
       </div>
 

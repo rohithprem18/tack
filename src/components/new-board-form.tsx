@@ -21,7 +21,7 @@ export function NewBoardForm() {
     <form
       ref={formRef}
       action={createBoardAction}
-      className="flex items-center gap-2"
+      className="flex flex-wrap items-center gap-2"
     >
       <Input
         name="title"
@@ -30,12 +30,16 @@ export function NewBoardForm() {
         onKeyDown={(e) => {
           if (e.key === "Escape") setOpen(false);
         }}
-        className="max-w-[280px]"
+        className="w-full sm:w-auto sm:max-w-[280px]"
       />
-      <Button type="submit">Create board</Button>
-      <Button variant="quiet" type="button" onClick={() => setOpen(false)}>
-        Cancel
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button type="submit" className="whitespace-nowrap">
+          Create board
+        </Button>
+        <Button variant="quiet" type="button" onClick={() => setOpen(false)}>
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }
