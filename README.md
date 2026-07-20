@@ -120,7 +120,7 @@ src/
 │   ├── page.tsx              # landing page (server) + motion components
 │   ├── login/  register/     # auth pages
 │   ├── boards/                # board grid
-│   │   └── [id]/              # single board (lists, cards, dnd)
+│   │   └── [id]/[[...slug]]/  # single board — /boards/{id}/{title-slug}
 │   └── api/auth/[...nextauth]/
 ├── auth.ts                    # Auth.js config
 ├── proxy.ts                   # route guard for /boards/:path*
@@ -193,3 +193,13 @@ Audited with `npm run audit:responsive` — captures every page at 320/375/414/7
 
 - The board header's breadcrumb + avatar stack + invite button didn't wrap, so at 320px the board title got squeezed to zero width and disappeared entirely. Fixed: the logo and avatar stack hide below `sm`, the invite button drops to icon-only, and the header wraps if it still doesn't fit — the title is never sacrificed.
 - The "New board" inline form kept its input and both buttons on one row regardless of width, wrapping "Create board"'s own label mid-word on narrow screens. Fixed: it wraps to its own row below the input under `sm`.
+
+## URL structure
+
+Board URLs are `/boards/{id}/{title-slug}` — e.g. `/boards/cmsru63.../tack-launch` — instead of a bare id. The **id is still the only thing looked up** (Prisma `cuid`, permission-checked server-side); the slug is cosmetic, derived from the title via `slugify()` in `src/lib/utils.ts`. That split matters:
+
+- Renaming a board never breaks a link someone already has — the id still resolves.
+- Visiting the bare `/boards/{id}` (an old bookmark, or a link from before this existed) 307-redirects to the canonical slugged URL, same as a stale/hand-edited slug does.
+- No slug uniqueness constraint, no migration, no extra query — it's computed at render/link time, not stored.
+
+Implemented as a single optional catch-all route, `app/boards/[id]/[[...slug]]/page.tsx`, so both URL shapes hit the same page component.

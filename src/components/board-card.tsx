@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { deleteBoardAction } from "@/lib/actions/boards";
+import { boardHref } from "@/lib/utils";
 
 export function BoardCard({
   id,
@@ -22,7 +23,7 @@ export function BoardCard({
       whileTap={{ scale: 0.985 }}
       className="group relative rounded-md border border-rule bg-surface p-4 transition-colors duration-[120ms] ease-out hover:bg-tint"
     >
-      <Link href={`/boards/${id}`} className="block">
+      <Link href={boardHref({ id, title })} className="block">
         <p className="pr-6 text-sm font-medium text-ink">{title}</p>
         <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
           {listCount} {listCount === 1 ? "list" : "lists"}

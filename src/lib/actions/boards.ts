@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { boardHref } from "@/lib/utils";
 
 async function requireUserId() {
   const session = await auth();
@@ -25,7 +26,7 @@ export async function createBoardAction(formData: FormData) {
   });
 
   revalidatePath("/boards");
-  redirect(`/boards/${board.id}`);
+  redirect(boardHref(board));
 }
 
 export async function deleteBoardAction(boardId: string) {

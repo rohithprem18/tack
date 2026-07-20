@@ -1,14 +1,15 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { BoardView } from "@/components/board/board-view";
+import { slugify } from "@/lib/utils";
 
 export default async function BoardPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; slug?: string[] }>;
 }) {
-  const { id } = await params;
+  const { id, slug } = await params;
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) notFound();
@@ -23,6 +24,13 @@ export default async function BoardPage({
 
   if (!board) notFound();
   if (!board.members.some((m) => m.userId === userId)) notFound();
+
+  // The id is the real lookup key above — this only keeps the URL's slug
+  // segment honest (canonical, or filled in on old id-only bookmarks).
+  const canonicalSlug = slugify(board.title);
+  if (slug?.[0] !== canonicalSlug) {
+    redirect(`/boards/${id}/${canonicalSlug}`);
+  }
 
   const members = board.members.map((m) => ({
     id: m.user.id,
