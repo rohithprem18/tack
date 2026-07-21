@@ -6,6 +6,8 @@
 
 **A minimal team board. Lists, cards, drag, done.**
 
+**[Live demo →](https://tack-sigma.vercel.app)**
+
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
@@ -17,11 +19,9 @@
 
 ---
 
-## What is this
+## Overview
 
-Tack is a small, opinionated project board: boards → lists → cards, dragged between lists with the mouse or keyboard. It's built to look deliberate with almost no UI — one accent color, hairline borders, a mono-label layer for structure, and a single signature detail (the "tack rail," a pine underline that fills a list header only when it holds cards).
-
-No REST layer, no client-side data-fetching library. Every mutation is a **Server Action**, backed by Prisma against Postgres.
+Tack is a small, opinionated project board — boards → lists → cards, dragged between lists with the mouse or keyboard. It's built to look deliberate with almost no UI: one accent color, hairline borders, a mono-label layer for structure, and a single signature detail — the "tack rail," a pine underline that fills a list header only when it holds cards.
 
 ## Screenshots
 
@@ -34,172 +34,43 @@ No REST layer, no client-side data-fetching library. Every mutation is a **Serve
 </tr>
 <tr>
 <td width="50%"><img src="./docs/screenshots/board-desktop.png" alt="Board with lists and cards" width="100%" /><br/><sub>Board — lists, cards, drag &amp; drop</sub></td>
-<td width="50%"><img src="./docs/screenshots/board-mobile.png" alt="Board on a 390px mobile viewport" width="100%" /><br/><sub>Board at 390px — horizontal scroll</sub></td>
+<td width="50%"><img src="./docs/screenshots/board-mobile.png" alt="Board on a 390px mobile viewport" width="100%" /><br/><sub>Board at 390px</sub></td>
 </tr>
 </table>
 
-*(All captured against a live local build at 2x scale — nothing staged.)*
+## Highlights
 
-## Features
-
-- **Google + email/password auth** via Auth.js v5, sessions as JWT, Google's own multi-color "G" mark on the button.
-- **Boards, lists, cards** with inline "type and hit Enter" creation.
-- **Drag and drop** across and within lists (`dnd-kit`), with optimistic UI — the card moves instantly and only snaps back if the server rejects it.
-- **Card slide-over**: description, assignee, delete — autosaves on blur, slides in/out instead of popping.
-- **Invite by email** to add a teammate to a board.
-- **Motion throughout**, not just the landing page: page-to-page transitions, tap/hover feedback on every button, an animated invite popover and card panel — all disabled automatically under `prefers-reduced-motion`, and deliberately kept off the board's draggable cards so it never fights `dnd-kit`'s own transform.
-- **Breadcrumb navigation** (`Tack / Boards / <board title>`) on the board page — no dead end that only the browser's back button can escape.
-- **Live sync** — other members' changes show up without a manual refresh (see below).
-- **Responsive down to a 320px viewport**, audited across 320/375/414/768/1024px — not just eyeballed. Keyboard-navigable, focus-visible everywhere.
+- **Boards, lists, cards** — inline creation, drag-and-drop across and within lists (`dnd-kit`), optimistic UI on every mutation.
+- **Google + email/password auth**, sessions as JWT.
+- **Card detail slide-over** — description, assignee, delete, autosaves on blur.
+- **Live sync** — teammates' changes appear without a manual refresh.
+- **Motion throughout** — page transitions, tap/hover feedback, animated panels — respecting `prefers-reduced-motion`, and deliberately kept off the draggable cards so it never fights `dnd-kit`'s own transform.
+- **Clean, permanent URLs** — `/boards/{id}/{title-slug}`, renaming a board never breaks a shared link.
+- **Fully responsive**, audited down to a 320px viewport.
+- **Server Actions only** — no REST layer, no client-side data-fetching library.
 
 ## Tech stack
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 16, App Router, TypeScript (strict, no `any`) |
-| Styling | Tailwind CSS v4, design tokens in `globals.css` |
-| Motion | Framer Motion, app-wide — page transitions, button feedback, panel/popover animation |
+| Framework | Next.js 16, App Router, TypeScript (strict) |
+| Styling | Tailwind CSS v4, custom design tokens |
+| Motion | Framer Motion |
 | Auth | Auth.js v5 — Google OAuth + Credentials |
-| Database | Prisma 5 + PostgreSQL |
+| Database | Prisma + PostgreSQL (Neon) |
 | Drag & drop | `@dnd-kit/core` + `@dnd-kit/sortable` |
-| Icons | `lucide-react` |
-| Mutations | Server Actions exclusively — no REST endpoints, no React Query |
+| Deployment | Vercel |
 
-## Getting started
-
-```bash
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). A demo account is already seeded:
-
-```
-email:    demo@tack.app
-password: password123
-```
-
-Re-seed any time with `npm run seed`.
-
-### Google sign-in (optional)
-
-Credentials login works with zero setup. To also enable "Continue with Google":
-
-1. Create an OAuth client in the [Google Cloud console](https://console.cloud.google.com/apis/credentials).
-2. Add authorized redirect URI: `http://localhost:3000/api/auth/callback/google`.
-3. Set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` in `.env.local` (see `.env.example`).
-
-### Database
-
-Postgres (works locally and in production against the same connection — no local DB engine to install). Get a free instance from [Neon](https://neon.tech) or [Supabase](https://supabase.com), or provision Vercel Postgres from your Vercel project's Storage tab.
-
-```bash
-# DATABASE_URL in .env.local, then:
-npx prisma db push   # sync schema.prisma -> your database
-npm run seed          # seed a demo board
-```
-
-Schema in `prisma/schema.prisma`.
-
-## Deployment (Vercel)
-
-1. **Database first.** Create a Postgres instance (Neon/Supabase free tier, or Vercel Postgres) and copy its connection string.
-2. Push the schema against it: set `DATABASE_URL` in `.env.local` to that string, run `npx prisma db push`, then `npm run seed` if you want the demo board.
-3. `vercel login`, then `vercel link` from the project root.
-4. Set environment variables on the Vercel project (`vercel env add <NAME> production`, or via the dashboard): `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `DATABASE_URL`.
-5. In the [Google Cloud console](https://console.cloud.google.com/apis/credentials), add your production callback to the OAuth client's authorized redirect URIs: `https://<your-domain>/api/auth/callback/google`.
-6. `vercel --prod`.
-
-`trustHost: true` in `src/auth.ts` means Auth.js trusts whatever `Host` header Vercel forwards — no `AUTH_URL` pinning needed.
-
-## Project structure
-
-```
-src/
-├── app/
-│   ├── page.tsx              # landing page (server) + motion components
-│   ├── login/  register/     # auth pages
-│   ├── boards/                # board grid
-│   │   └── [id]/[[...slug]]/  # single board — /boards/{id}/{title-slug}
-│   └── api/auth/[...nextauth]/
-├── auth.ts                    # Auth.js config
-├── proxy.ts                   # route guard for /boards/:path*
-├── components/
-│   ├── board/                 # board view, list column, card, slide-over
-│   ├── landing/                # hero, board preview, header (Framer Motion)
-│   ├── page-transition.tsx     # AnimatePresence wrapper, mounted in the root layout
-│   └── ...                    # button, input, avatar, logo primitives (motion-enabled)
-└── lib/
-    ├── actions/                # every mutation — boards, lists, cards, members, auth
-    ├── prisma.ts               # PrismaClient singleton
-    └── utils.ts
-prisma/
-├── schema.prisma
-└── seed.ts
-```
-
-## Scripts
-
-| Command | Does |
-|---|---|
-| `npm run dev` | Start the dev server (Turbopack) |
-| `npm run build` | Production build — type-checked, must pass clean |
-| `npm run start` | Serve the production build |
-| `npm run lint` | ESLint |
-| `npm run seed` | Seed a demo board |
-| `npm run screenshot` | Re-capture the README screenshots against a running build (needs `npx playwright install chromium` once) |
-
-## Design tokens — "bone & pine"
+## Design system — "bone & pine"
 
 | Token | Value | Used for |
 |---|---|---|
 | `--color-bone` | `#FBFAF7` | App background |
 | `--color-surface` | `#FFFFFF` | Cards, panels |
 | `--color-ink` | `#17181B` | Primary text |
-| `--color-muted` | `#6E7278` | Secondary text, meta |
-| `--color-rule` | `#E7E5DF` | Hairlines — the primary way things separate |
-| `--color-pine` | `#1F5C57` | The one accent: buttons, focus rings, tack rail |
+| `--color-muted` | `#6E7278` | Secondary text |
+| `--color-rule` | `#E7E5DF` | Hairlines |
+| `--color-pine` | `#1F5C57` | The one accent |
 | `--color-tint` | `#E9F1EF` | Hover / active states |
 
 One accent color, no gradients, no shadow at rest — the only shadow in the app is on a card mid-drag.
-
-## Performance notes
-
-- `lucide-react` and `framer-motion` are tree-shaken per-import via `experimental.optimizePackageImports` in `next.config.ts`.
-- Every board mutation resolves membership in a **single** joined Prisma query instead of two round trips.
-- `useOptimistic` covers every board mutation (add/move/edit/delete), not just drag — the UI updates instantly and only reconciles from the server on failure.
-- Framer Motion runs app-wide (page transitions, buttons, panels), but is deliberately kept off the board's draggable cards — the two would fight over the same transform. Drag interactions stay on `dnd-kit`'s GPU-friendly transforms alone.
-- `DndContext` is given a stable `id` (`dnd-${boardId}`) — `dnd-kit` otherwise auto-generates its internal accessibility IDs, which differ between server and client render and throw a real hydration mismatch in dev.
-- First-visit-per-route compiles in `next dev` are inherent to Turbopack's on-demand dev compilation — for a true read on production speed, use `npm run build && npm run start`.
-
-## What's out of scope
-
-- List reordering / deletion — lists are append-only; only cards drag between them.
-- Email verification and password reset.
-
-## Live sync
-
-Other members' changes show up without a manual refresh — the board polls every 3s via `router.refresh()` and re-renders with fresh server data. No websockets, no third-party pub/sub account to wire up. It's suspended automatically:
-
-- while the browser tab is in the background (`document.visibilityState`),
-- mid-drag, so an incoming refresh can never yank a card out from under `dnd-kit`,
-- while any of your own mutations are still in flight (`useTransition`'s pending state).
-
-This trades true push-based instancy for zero added infrastructure — good enough at this scale; a Postgres `LISTEN/NOTIFY` bridge or a hosted pub/sub (Pusher, Ably, Supabase Realtime) would get changes down to sub-second if that's ever needed.
-
-## Responsive design
-
-Audited with `npm run audit:responsive` — captures every page at 320/375/414/768/1024px against a live build and rechecks after each fix, rather than trusting a single 375px eyeball pass. Caught and fixed two real breakage points that a cursory look would've missed:
-
-- The board header's breadcrumb + avatar stack + invite button didn't wrap, so at 320px the board title got squeezed to zero width and disappeared entirely. Fixed: the logo and avatar stack hide below `sm`, the invite button drops to icon-only, and the header wraps if it still doesn't fit — the title is never sacrificed.
-- The "New board" inline form kept its input and both buttons on one row regardless of width, wrapping "Create board"'s own label mid-word on narrow screens. Fixed: it wraps to its own row below the input under `sm`.
-
-## URL structure
-
-Board URLs are `/boards/{id}/{title-slug}` — e.g. `/boards/cmsru63.../tack-launch` — instead of a bare id. The **id is still the only thing looked up** (Prisma `cuid`, permission-checked server-side); the slug is cosmetic, derived from the title via `slugify()` in `src/lib/utils.ts`. That split matters:
-
-- Renaming a board never breaks a link someone already has — the id still resolves.
-- Visiting the bare `/boards/{id}` (an old bookmark, or a link from before this existed) 307-redirects to the canonical slugged URL, same as a stale/hand-edited slug does.
-- No slug uniqueness constraint, no migration, no extra query — it's computed at render/link time, not stored.
-
-Implemented as a single optional catch-all route, `app/boards/[id]/[[...slug]]/page.tsx`, so both URL shapes hit the same page component.
