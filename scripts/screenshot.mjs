@@ -45,9 +45,8 @@ async function shot(path, name, viewport, { login = false, boardId, fullPage = f
 const desktop = { width: 1280, height: 800 };
 const mobile = { width: 390, height: 844 };
 
-await shot("/", "landing-desktop", desktop);
+// Only what README.md actually embeds — keep this list and the doc in sync.
 await shot("/", "landing-full", desktop, { fullPage: true });
-await shot("/", "landing-mobile", mobile);
 await shot("/login", "login-desktop", desktop);
 
 // boards + board detail need auth
@@ -59,8 +58,9 @@ const board = await prisma.board.findFirst({ where: { title: "Tack launch" } });
 await prisma.$disconnect();
 
 if (board) {
-  await shot(null, "board-desktop", desktop, { login: true, boardId: board.id });
-  await shot(null, "board-mobile", mobile, { login: true, boardId: board.id });
+  const slug = board.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  await shot(null, "board-desktop", desktop, { login: true, boardId: `${board.id}/${slug}` });
+  await shot(null, "board-mobile", mobile, { login: true, boardId: `${board.id}/${slug}` });
 }
 
 await browser.close();

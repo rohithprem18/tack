@@ -9,6 +9,7 @@ mkdirSync(OUT, { recursive: true });
 const prisma = new PrismaClient();
 const board = await prisma.board.findFirst({ where: { title: "Tack launch" } });
 await prisma.$disconnect();
+const slug = board?.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
 const browser = await chromium.launch({
   args: ["--font-render-hinting=none", "--disable-lcd-text", "--force-color-profile=srgb"],
@@ -62,7 +63,7 @@ for (const width of widths) {
   if (board) {
     const page = await authedContext.newPage();
     await page.setViewportSize({ width, height });
-    await page.goto(`${BASE}/boards/${board.id}`);
+    await page.goto(`${BASE}/boards/${board.id}/${slug}`);
     await page.waitForTimeout(500);
     await page.screenshot({ path: `${OUT}/board-${width}.png` });
     await page.close();

@@ -24,12 +24,28 @@ export function CardItem({
   };
 
   if (isDragging) {
+    // The dashed box itself must stay visible (that's the placeholder) —
+    // only its content is hidden, as a same-shaped, invisible copy of the
+    // real card. That gives the box the dragged card's exact height without
+    // hardcoding a guess or measuring anything in JS.
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className="h-[var(--card-h,64px)] rounded-md border border-dashed border-pine"
-      />
+        className="flex w-full flex-col items-start rounded-md border border-dashed border-pine p-3 text-left"
+      >
+        <div className="invisible">
+          <p className="text-sm">{card.title}</p>
+          {card.description && (
+            <p className="mt-1 line-clamp-1 text-[13px]">{card.description}</p>
+          )}
+          {assignee && (
+            <div className="mt-2 flex w-full justify-end">
+              <Avatar name={assignee.name ?? assignee.email} />
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 
