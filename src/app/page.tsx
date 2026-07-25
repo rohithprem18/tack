@@ -1,3 +1,4 @@
+import { auth, signOut } from "@/auth";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { Hero } from "@/components/landing/hero";
 import { BoardPreview } from "@/components/landing/board-preview";
@@ -29,16 +30,24 @@ const PREVIEW = [
   },
 ];
 
-export default function Home() {
+async function signOutAction() {
+  "use server";
+  await signOut({ redirectTo: "/" });
+}
+
+export default async function Home() {
+  const session = await auth();
+  const isLoggedIn = Boolean(session?.user);
+
   return (
     <div className="flex min-h-screen flex-col">
-      <LandingHeader />
+      <LandingHeader user={session?.user} onSignOut={signOutAction} />
 
       <main className="flex flex-1 flex-col items-center px-6 pb-20 pt-10 md:pt-16">
-        <Hero />
+        <Hero isLoggedIn={isLoggedIn} />
         <BoardPreview lists={PREVIEW} />
         <Features />
-        <CtaBand />
+        <CtaBand isLoggedIn={isLoggedIn} />
       </main>
 
       <footer className="border-t border-rule px-6 py-6 md:px-10">

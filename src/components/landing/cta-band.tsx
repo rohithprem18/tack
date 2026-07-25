@@ -10,7 +10,7 @@ const variants: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
 
-export function CtaBand() {
+export function CtaBand({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   return (
     <MotionConfig reducedMotion="user">
       <motion.section
@@ -21,11 +21,17 @@ export function CtaBand() {
         className="mt-20 flex w-full max-w-[920px] flex-col items-center gap-4 rounded-lg border border-rule bg-surface px-6 py-12 text-center sm:flex-row sm:justify-between sm:text-left"
       >
         <div>
-          <h2 className="text-[20px] font-medium text-ink">Ready to pin your work down?</h2>
-          <p className="mt-1 text-sm text-muted">Free to start. No credit card, no setup ceremony.</p>
+          <h2 className="text-[20px] font-medium text-ink">
+            {isLoggedIn ? "Jump back into your boards." : "Ready to pin your work down?"}
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            {isLoggedIn
+              ? "Pick up right where you left off."
+              : "Free to start. No credit card, no setup ceremony."}
+          </p>
         </div>
-        <ButtonLink href="/register" className="shrink-0">
-          Create board
+        <ButtonLink href={isLoggedIn ? "/boards" : "/register"} className="shrink-0">
+          {isLoggedIn ? "Go to your boards" : "Create board"}
         </ButtonLink>
       </motion.section>
     </MotionConfig>

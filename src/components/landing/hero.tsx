@@ -16,7 +16,7 @@ const item: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
 
-export function Hero() {
+export function Hero({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   return (
     <MotionConfig reducedMotion="user">
       <motion.section
@@ -41,14 +41,18 @@ export function Hero() {
             whileTap={{ scale: 0.97 }}
             className="inline-block"
           >
-            <ButtonLink href="/register">Create board</ButtonLink>
+            <ButtonLink href={isLoggedIn ? "/boards" : "/register"}>
+              {isLoggedIn ? "Go to your boards" : "Create board"}
+            </ButtonLink>
           </motion.span>
-          <Link
-            href="/login"
-            className="text-sm text-muted underline-offset-4 transition-colors duration-[120ms] ease-out hover:text-ink hover:underline"
-          >
-            Log in
-          </Link>
+          {!isLoggedIn && (
+            <Link
+              href="/login"
+              className="text-sm text-muted underline-offset-4 transition-colors duration-[120ms] ease-out hover:text-ink hover:underline"
+            >
+              Log in
+            </Link>
+          )}
         </motion.div>
       </motion.section>
     </MotionConfig>
