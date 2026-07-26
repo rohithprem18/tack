@@ -1,6 +1,7 @@
 import { auth, signOut } from "@/auth";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { Hero } from "@/components/landing/hero";
+import { LightPillar } from "@/components/landing/light-pillar";
 import { BoardPreview } from "@/components/landing/board-preview";
 import { Features } from "@/components/landing/features";
 import { CtaBand } from "@/components/landing/cta-band";
@@ -44,7 +45,25 @@ export default async function Home() {
       <LandingHeader user={session?.user} onSignOut={signOutAction} />
 
       <main className="flex flex-1 flex-col items-center px-6 pb-20 pt-10 md:pt-16">
-        <Hero isLoggedIn={isLoggedIn} />
+        <div className="relative flex w-full min-h-[440px] items-center justify-center overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <LightPillar
+              topColor="#1f5c57"
+              bottomColor="#a9d9d1"
+              intensity={0.9}
+              rotationSpeed={0.3}
+              glowAmount={0.002}
+              pillarWidth={3}
+              pillarHeight={0.4}
+              noiseIntensity={0.5}
+              pillarRotation={25}
+              interactive={false}
+              mixBlendMode="normal"
+              quality="high"
+            />
+          </div>
+          <Hero isLoggedIn={isLoggedIn} />
+        </div>
         <BoardPreview lists={PREVIEW} />
         <Features />
         <CtaBand isLoggedIn={isLoggedIn} />
