@@ -5,7 +5,7 @@ import { motion, MotionConfig } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
 
-type Variant = "primary" | "quiet" | "ghost";
+type Variant = "primary" | "quiet" | "ghost" | "danger";
 
 // framer-motion's event props (onAnimationStart, onDrag, ...) collide with
 // React's native DOM event types of the same name — drop the native ones.
@@ -27,6 +27,7 @@ function buttonClasses(variant: Variant, className?: string) {
     variant === "quiet" &&
       "text-muted hover:text-ink underline-offset-4 hover:underline",
     variant === "ghost" && "border border-rule text-ink hover:bg-tint",
+    variant === "danger" && "bg-danger text-bone hover:bg-danger/90",
     className
   );
 }

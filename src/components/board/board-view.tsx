@@ -20,6 +20,7 @@ import { AddInline } from "@/components/board/add-inline";
 import { CardPanel } from "@/components/board/card-panel";
 import { CardPreview } from "@/components/board/card-preview";
 import { InvitePopover } from "@/components/board/invite-popover";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { createCardAction, deleteCardAction, moveCardAction, updateCardAction } from "@/lib/actions/cards";
 import { createListAction } from "@/lib/actions/lists";
 import type { CardData, ListData, MemberData } from "@/components/board/types";
@@ -123,6 +124,7 @@ export function BoardView({
   const [optimisticLists, applyOptimistic] = useOptimistic(lists, listsReducer);
   const [activeCard, setActiveCard] = useState<CardData | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [confirmingDeleteCardId, setConfirmingDeleteCardId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const membersById = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
@@ -220,13 +222,20 @@ export function BoardView({
     updateCardAction(cardId, data).catch(() => router.refresh());
   }
 
-  function handleDeleteCard(cardId: string) {
+  function handleConfirmDeleteCard() {
+    const cardId = confirmingDeleteCardId;
+    if (!cardId) return;
+    setConfirmingDeleteCardId(null);
     setSelectedCardId(null);
     startTransition(() => {
       applyOptimistic({ type: "deleteCard", cardId });
     });
     deleteCardAction(cardId).catch(() => router.refresh());
   }
+
+  const cardPendingDelete = confirmingDeleteCardId
+    ? optimisticLists.flatMap((l) => l.cards).find((c) => c.id === confirmingDeleteCardId) ?? null
+    : null;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -297,10 +306,20 @@ export function BoardView({
             members={members}
             onClose={() => setSelectedCardId(null)}
             onSave={(data) => handleSaveCard(selectedCard.id, data)}
-            onDelete={() => handleDeleteCard(selectedCard.id)}
+            onDelete={() => setConfirmingDeleteCardId(selectedCard.id)}
           />
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        open={confirmingDeleteCardId !== null}
+        title={cardPendingDelete ? `Delete "${cardPendingDelete.title}"?` : "Delete this card?"}
+        description="This can't be undone."
+        confirmLabel="Delete card"
+        pending={isPending}
+        onConfirm={handleConfirmDeleteCard}
+        onCancel={() => setConfirmingDeleteCardId(null)}
+      />
     </div>
   );
 }
