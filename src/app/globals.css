@@ -1,8 +1,11 @@
+@import "../styles/fonts.css";
 @import "tailwindcss";
+@import "../styles/theme.css";
 
 @theme {
   --color-bone: #fbfaf7;
   --color-surface: #ffffff;
+  --color-background: #ffffff;
   --color-ink: #17181b;
   --color-muted: #6e7278;
   --color-rule: #e7e5df;
@@ -13,6 +16,7 @@
   --font-serif: var(--font-instrument-serif);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-jetbrains-mono);
+  --font-inter: "Inter", var(--font-geist-sans), sans-serif;
 }
 
 body {

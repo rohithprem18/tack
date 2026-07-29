@@ -25,7 +25,7 @@ Tack is a small, opinionated project board — boards → lists → cards, dragg
 
 ## Screenshots
 
-<img src="./docs/screenshots/landing-full.png" alt="Tack landing page — hero, live board preview, features, and CTA" width="100%" />
+<img src="./docs/screenshots/landing-full.png" alt="Tack landing page — fullscreen cinematic video hero" width="100%" />
 
 <table>
 <tr>
@@ -40,6 +40,7 @@ Tack is a small, opinionated project board — boards → lists → cards, dragg
 
 ## Highlights
 
+- **Cinematic video hero** — fullscreen looping background video with a hand-rolled fade-in/fade-out crossfade (no hard loop cut), Instrument Serif + Inter type, gradient overlays, and staggered fade-rise entrance animations.
 - **Boards, lists, cards** — inline creation, drag-and-drop across and within lists (`dnd-kit`), optimistic UI on every mutation.
 - **Google + email/password auth**, sessions as JWT.
 - **Card detail slide-over** — description, assignee, delete, autosaves on blur.
@@ -55,6 +56,7 @@ Tack is a small, opinionated project board — boards → lists → cards, dragg
 |---|---|
 | Framework | Next.js 16, App Router, TypeScript (strict) |
 | Styling | Tailwind CSS v4, custom design tokens |
+| Typography | Instrument Serif (display) + Inter (body) |
 | Motion | Framer Motion |
 | Auth | Auth.js v5 — Google OAuth + Credentials |
 | Database | Prisma + PostgreSQL (Neon) |

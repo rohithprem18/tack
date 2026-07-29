@@ -23,7 +23,10 @@ async function shot(path, name, viewport, { login = false, boardId, fullPage = f
 
   const url = boardId ? `${BASE}/boards/${boardId}` : `${BASE}${path}`;
   await page.goto(url);
-  await page.waitForTimeout(900); // let entrance animations settle
+  // The landing hero's background video needs to actually buffer before it
+  // paints anything worth capturing; everything else just needs its
+  // entrance animations to settle.
+  await page.waitForTimeout(path === "/" ? 6000 : 900);
 
   if (fullPage) {
     // whileInView only fires on a real scroll — Playwright's fullPage capture

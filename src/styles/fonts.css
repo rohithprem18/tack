@@ -1,0 +1,6 @@
+/* Display + body typefaces for the cinematic hero.
+   Instrument Serif is already loaded via next/font in the root layout
+   (--font-instrument-serif); Inter is new and loaded here. Both are
+   re-imported by URL as well so this stylesheet is self-contained if
+   reused outside the app shell. */
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap");
