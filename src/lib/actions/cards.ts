@@ -51,7 +51,12 @@ export async function createCardAction(listId: string, title: string) {
 
 export async function updateCardAction(
   cardId: string,
-  data: { title?: string; description?: string; assigneeId?: string | null }
+  data: {
+    title?: string;
+    description?: string;
+    assigneeId?: string | null;
+    dueDate?: string | null;
+  }
 ) {
   const userId = await requireUserId();
   const card = await assertCardAccess(cardId, userId);
@@ -62,7 +67,22 @@ export async function updateCardAction(
       ...(data.title !== undefined ? { title: data.title.trim() || card.title } : {}),
       ...(data.description !== undefined ? { description: data.description } : {}),
       ...(data.assigneeId !== undefined ? { assigneeId: data.assigneeId || null } : {}),
+      ...(data.dueDate !== undefined ? { dueDate: data.dueDate ? new Date(data.dueDate) : null } : {}),
     },
+  });
+  revalidatePath(`/boards/${card.list.boardId}`);
+}
+
+// completedAt is derived here from the server clock rather than trusted
+// from the client, so "completed at what time" stays honest even if the
+// caller's local clock is wrong.
+export async function toggleCardCompletedAction(cardId: string, completed: boolean) {
+  const userId = await requireUserId();
+  const card = await assertCardAccess(cardId, userId);
+
+  await prisma.card.update({
+    where: { id: cardId },
+    data: { completed, completedAt: completed ? new Date() : null },
   });
   revalidatePath(`/boards/${card.list.boardId}`);
 }

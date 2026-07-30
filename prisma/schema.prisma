@@ -92,13 +92,16 @@ model List {
 }
 
 model Card {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   description String?
   position    Float
   listId      String
-  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  list        List      @relation(fields: [listId], references: [id], onDelete: Cascade)
   assigneeId  String?
-  assignee    User?    @relation("CardAssignee", fields: [assigneeId], references: [id])
-  createdAt   DateTime @default(now())
+  assignee    User?     @relation("CardAssignee", fields: [assigneeId], references: [id])
+  dueDate     DateTime?
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
 }

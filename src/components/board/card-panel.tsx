@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input, Textarea } from "@/components/input";
 import { Button } from "@/components/button";
+import { cn, formatDateTime } from "@/lib/utils";
 import type { CardData, MemberData } from "@/components/board/types";
 
 export function CardPanel({
@@ -12,12 +13,19 @@ export function CardPanel({
   members,
   onClose,
   onSave,
+  onToggleCompleted,
   onDelete,
 }: {
   card: CardData;
   members: MemberData[];
   onClose: () => void;
-  onSave: (data: { title?: string; description?: string; assigneeId?: string | null }) => void;
+  onSave: (data: {
+    title?: string;
+    description?: string;
+    assigneeId?: string | null;
+    dueDate?: string | null;
+  }) => void;
+  onToggleCompleted: (completed: boolean) => void;
   onDelete: () => void;
 }) {
   // Parent keys this component by card.id, so a fresh instance (and fresh
@@ -69,6 +77,24 @@ export function CardPanel({
         </div>
 
         <div className="flex flex-col gap-4">
+          <button
+            type="button"
+            onClick={() => onToggleCompleted(!card.completed)}
+            className="flex items-center gap-2 self-start rounded-md px-1.5 py-1 text-sm text-muted transition-colors duration-[120ms] ease-out hover:bg-tint hover:text-ink"
+          >
+            <span
+              className={cn(
+                "flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors duration-[120ms] ease-out",
+                card.completed ? "border-pine bg-pine text-bone" : "border-rule"
+              )}
+            >
+              {card.completed && <Check size={11} strokeWidth={2.5} />}
+            </span>
+            {card.completed && card.completedAt
+              ? `Completed ${formatDateTime(card.completedAt)}`
+              : "Mark complete"}
+          </button>
+
           <div className="flex flex-col gap-1.5">
             <label className="text-sm text-muted" htmlFor="card-title">
               Title
@@ -80,6 +106,7 @@ export function CardPanel({
               onBlur={() => {
                 if (title.trim() && title !== card.title) onSave({ title });
               }}
+              className={card.completed ? "line-through text-muted" : undefined}
             />
           </div>
 
@@ -116,6 +143,18 @@ export function CardPanel({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted" htmlFor="card-due">
+              Due date
+            </label>
+            <Input
+              id="card-due"
+              type="date"
+              defaultValue={card.dueDate ? card.dueDate.slice(0, 10) : ""}
+              onChange={(e) => onSave({ dueDate: e.target.value || null })}
+            />
           </div>
         </div>
 

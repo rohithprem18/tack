@@ -9,13 +9,17 @@ import type { ListData, MemberData } from "@/components/board/types";
 export function ListColumn({
   list,
   membersById,
+  matchesSearch,
   onOpenCard,
   onAddCard,
+  onToggleCardCompleted,
 }: {
   list: ListData;
   membersById: Map<string, MemberData>;
+  matchesSearch: (card: ListData["cards"][number]) => boolean;
   onOpenCard: (cardId: string) => void;
   onAddCard: (listId: string, title: string) => void;
+  onToggleCardCompleted: (cardId: string, completed: boolean) => void;
 }) {
   const { setNodeRef } = useDroppable({ id: list.id });
   const cards = [...list.cards].sort((a, b) => a.position - b.position);
@@ -44,7 +48,9 @@ export function ListColumn({
               key={card.id}
               card={card}
               assignee={card.assigneeId ? membersById.get(card.assigneeId) : undefined}
+              dimmed={!matchesSearch(card)}
               onOpen={() => onOpenCard(card.id)}
+              onToggleCompleted={() => onToggleCardCompleted(card.id, !card.completed)}
             />
           ))}
         </SortableContext>

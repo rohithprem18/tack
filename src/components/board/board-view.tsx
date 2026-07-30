@@ -21,7 +21,13 @@ import { CardPanel } from "@/components/board/card-panel";
 import { CardPreview } from "@/components/board/card-preview";
 import { InvitePopover } from "@/components/board/invite-popover";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { createCardAction, deleteCardAction, moveCardAction, updateCardAction } from "@/lib/actions/cards";
+import {
+  createCardAction,
+  deleteCardAction,
+  moveCardAction,
+  toggleCardCompletedAction,
+  updateCardAction,
+} from "@/lib/actions/cards";
 import { createListAction } from "@/lib/actions/lists";
 import type { CardData, ListData, MemberData } from "@/components/board/types";
 
@@ -29,7 +35,12 @@ type OptimisticAction =
   | { type: "move"; cardId: string; toListId: string; position: number }
   | { type: "addCard"; tempId: string; listId: string; title: string }
   | { type: "addList"; tempId: string; title: string }
-  | { type: "updateCard"; cardId: string; data: { title?: string; description?: string; assigneeId?: string | null } }
+  | {
+      type: "updateCard";
+      cardId: string;
+      data: { title?: string; description?: string; assigneeId?: string | null; dueDate?: string | null };
+    }
+  | { type: "toggleComplete"; cardId: string; completed: boolean; completedAt: string | null }
   | { type: "deleteCard"; cardId: string };
 
 function findListIdForCard(lists: ListData[], cardId: string) {
@@ -71,6 +82,9 @@ function listsReducer(state: ListData[], action: OptimisticAction): ListData[] {
                   position: nextPosition(list.cards),
                   listId: action.listId,
                   assigneeId: null,
+                  dueDate: null,
+                  completed: false,
+                  completedAt: null,
                 },
               ],
             }
@@ -93,7 +107,18 @@ function listsReducer(state: ListData[], action: OptimisticAction): ListData[] {
                 ...(action.data.title !== undefined ? { title: action.data.title } : {}),
                 ...(action.data.description !== undefined ? { description: action.data.description } : {}),
                 ...(action.data.assigneeId !== undefined ? { assigneeId: action.data.assigneeId } : {}),
+                ...(action.data.dueDate !== undefined ? { dueDate: action.data.dueDate } : {}),
               }
+            : c
+        ),
+      }));
+    }
+    case "toggleComplete": {
+      return state.map((list) => ({
+        ...list,
+        cards: list.cards.map((c) =>
+          c.id === action.cardId
+            ? { ...c, completed: action.completed, completedAt: action.completedAt }
             : c
         ),
       }));
@@ -126,8 +151,18 @@ export function BoardView({
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [confirmingDeleteCardId, setConfirmingDeleteCardId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const membersById = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  function matchesSearch(card: CardData) {
+    if (!normalizedQuery) return true;
+    if (card.title.toLowerCase().includes(normalizedQuery)) return true;
+    const assignee = card.assigneeId ? membersById.get(card.assigneeId) : undefined;
+    const assigneeLabel = assignee?.name ?? assignee?.email ?? "";
+    return assigneeLabel.toLowerCase().includes(normalizedQuery);
+  }
 
   // Poll for other members' changes instead of requiring a hard refresh.
   // Skipped mid-drag, mid-mutation, or while the tab is in the background —
@@ -215,11 +250,22 @@ export function BoardView({
     createListAction(boardId, title).catch(() => router.refresh());
   }
 
-  function handleSaveCard(cardId: string, data: { title?: string; description?: string; assigneeId?: string | null }) {
+  function handleSaveCard(
+    cardId: string,
+    data: { title?: string; description?: string; assigneeId?: string | null; dueDate?: string | null }
+  ) {
     startTransition(() => {
       applyOptimistic({ type: "updateCard", cardId, data });
     });
     updateCardAction(cardId, data).catch(() => router.refresh());
+  }
+
+  function handleToggleCardCompleted(cardId: string, completed: boolean) {
+    const completedAt = completed ? new Date().toISOString() : null;
+    startTransition(() => {
+      applyOptimistic({ type: "toggleComplete", cardId, completed, completedAt });
+    });
+    toggleCardCompletedAction(cardId, completed).catch(() => router.refresh());
   }
 
   function handleConfirmDeleteCard() {
@@ -252,7 +298,14 @@ export function BoardView({
           <span className="shrink-0 text-rule">/</span>
           <h1 className="truncate text-sm font-medium text-ink">{boardTitle}</h1>
         </div>
-        <div className="shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search cards…"
+            className="w-40 rounded-md border border-rule bg-surface px-2.5 py-1.5 text-sm text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine sm:w-56"
+          />
           <InvitePopover boardId={boardId} members={members} />
         </div>
       </header>
@@ -276,8 +329,10 @@ export function BoardView({
                     key={list.id}
                     list={list}
                     membersById={membersById}
+                    matchesSearch={matchesSearch}
                     onOpenCard={setSelectedCardId}
                     onAddCard={handleAddCard}
+                    onToggleCardCompleted={handleToggleCardCompleted}
                   />
                 ))
             )}
@@ -306,6 +361,7 @@ export function BoardView({
             members={members}
             onClose={() => setSelectedCardId(null)}
             onSave={(data) => handleSaveCard(selectedCard.id, data)}
+            onToggleCompleted={(completed) => handleToggleCardCompleted(selectedCard.id, completed)}
             onDelete={() => setConfirmingDeleteCardId(selectedCard.id)}
           />
         )}

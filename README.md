@@ -42,8 +42,11 @@ Tack is a small, opinionated project board — boards → lists → cards, dragg
 
 - **Cinematic video hero** — fullscreen looping background video with a hand-rolled fade-in/fade-out crossfade (no hard loop cut), Instrument Serif + Inter type, gradient overlays, and staggered fade-rise entrance animations.
 - **Boards, lists, cards** — inline creation, drag-and-drop across and within lists (`dnd-kit`), optimistic UI on every mutation.
+- **Search & filter** — a board-level search box dims out cards that don't match on title or assignee, without disturbing drag-and-drop.
+- **Due dates** — optional per-card due date, shown on the card and flagged red once it's overdue and still incomplete.
+- **Completion tracking** — a checkbox marks a card done and records *when*, server-side, like a to-do list; the timestamp shows on the card panel.
 - **Google + email/password auth**, sessions as JWT.
-- **Card detail slide-over** — description, assignee, delete, autosaves on blur.
+- **Card detail slide-over** — description, assignee, due date, completion, delete, autosaves on blur.
 - **Live sync** — teammates' changes appear without a manual refresh.
 - **Motion throughout** — page transitions, tap/hover feedback, animated panels — respecting `prefers-reduced-motion`, and deliberately kept off the draggable cards so it never fights `dnd-kit`'s own transform.
 - **Clean, permanent URLs** — `/boards/{id}/{title-slug}`, renaming a board never breaks a shared link.

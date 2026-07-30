@@ -26,3 +26,25 @@ export function slugify(title: string) {
 export function boardHref(board: { id: string; title: string }) {
   return `/boards/${board.id}/${slugify(board.title)}`;
 }
+
+// "Aug 21" — no year, since due dates only ever matter within a board's
+// working horizon of a few weeks/months.
+export function formatDueDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+// "Aug 21, 2:45 PM" — used for the "completed at" timestamp, where the
+// time of day is the whole point.
+export function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export function isOverdue(dueDate: string | null, completed: boolean) {
+  if (!dueDate || completed) return false;
+  return new Date(dueDate).getTime() < Date.now();
+}

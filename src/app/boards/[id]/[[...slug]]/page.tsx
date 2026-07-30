@@ -49,6 +49,9 @@ export default async function BoardPage({
       position: card.position,
       listId: card.listId,
       assigneeId: card.assigneeId,
+      dueDate: card.dueDate ? card.dueDate.toISOString() : null,
+      completed: card.completed,
+      completedAt: card.completedAt ? card.completedAt.toISOString() : null,
     })),
   }));
 
