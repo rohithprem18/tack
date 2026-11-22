@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
+    "test:e2e": "playwright test",
     "screenshot": "node scripts/screenshot.mjs",
     "audit:responsive": "node scripts/responsive-audit.mjs",
     "postinstall": "prisma generate"

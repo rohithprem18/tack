@@ -66,6 +66,24 @@ Tack is a small, opinionated project board — boards → lists → cards, dragg
 | Drag & drop | `@dnd-kit/core` + `@dnd-kit/sortable` |
 | Deployment | Vercel |
 
+## Testing
+
+End-to-end tests live in [`tests/e2e`](tests/e2e) and run with [Playwright](https://playwright.dev/) against a running app backed by a real PostgreSQL database — no mocks. The Playwright `webServer` boots `npm run dev` automatically on port 3000 (the app's auth proxy expects the `__Secure-` session cookie whenever `NODE_ENV=production`, which a plain-http production server never sets, so e2e runs against the dev server over http).
+
+```bash
+# 1. Provide the database (e.g. a local Postgres) and env vars
+cp .env.example .env   # set DATABASE_URL and AUTH_SECRET
+
+# 2. Create the schema and seed the demo account (demo@tack.app / password123)
+npx prisma db push
+npm run seed
+
+# 3. Run the suite (boots `npm run dev` automatically on :3000)
+npm run test:e2e
+```
+
+Useful extras: `npx playwright test --ui` for the interactive UI mode, `npx playwright test --project=chromium tests/e2e/auth.spec.mjs` to run a single file, and `npx playwright show-report` to open the HTML report after a run. Traces and screenshots of failures are kept in `test-results/` and `playwright-report/`.
+
 ## Design system — "bone & pine"
 
 | Token | Value | Used for |
