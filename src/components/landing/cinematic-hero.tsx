@@ -87,7 +87,7 @@ export function CinematicHero({
       <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
         <Link
           href="/"
-          className="font-serif text-3xl tracking-tight text-[#000000]"
+          className="font-serif text-3xl tracking-tight text-ink"
         >
           Tack
           <sup className="text-base">®</sup>
@@ -99,7 +99,7 @@ export function CinematicHero({
               href={link.href}
               className={cn(
                 "text-sm transition-colors",
-                link.active ? "text-[#000000]" : "text-[#6F6F6F] hover:text-[#000000]"
+                link.active ? "text-ink" : "text-muted hover:text-ink"
               )}
             >
               {link.label}
@@ -110,7 +110,7 @@ export function CinematicHero({
               <form action={onSignOut}>
                 <button
                   type="submit"
-                  className="text-sm text-[#6F6F6F] transition-colors hover:text-[#000000]"
+                  className="text-sm text-muted transition-colors hover:text-ink"
                 >
                   Log out
                 </button>
@@ -119,14 +119,14 @@ export function CinematicHero({
           ) : (
             <Link
               href="/login"
-              className="text-sm text-[#6F6F6F] transition-colors hover:text-[#000000]"
+              className="text-sm text-muted transition-colors hover:text-ink"
             >
               Log in
             </Link>
           )}
           <Link
             href={isLoggedIn ? "/boards" : "/register"}
-            className="rounded-full bg-[#000000] px-6 py-2.5 text-sm text-[#FFFFFF] transition-transform hover:scale-[1.03]"
+            className="rounded-full bg-ink px-6 py-2.5 text-sm text-bone transition-transform hover:scale-[1.03]"
           >
             {isLoggedIn ? "Your boards" : "Begin Journey"}
           </Link>
@@ -139,21 +139,21 @@ export function CinematicHero({
         style={{ paddingTop: "calc(8rem - 75px)" }}
       >
         <h1
-          className="animate-fade-rise max-w-7xl font-serif text-5xl font-normal text-[#000000] sm:text-7xl md:text-8xl"
+          className="animate-fade-rise max-w-7xl font-serif text-5xl font-normal text-ink sm:text-7xl md:text-8xl"
           style={{ lineHeight: 0.95, letterSpacing: "-2.46px" }}
         >
-          Beyond <em className="italic text-[#6F6F6F]">the noise,</em> we pin{" "}
-          <em className="italic text-[#6F6F6F]">the work down.</em>
+          Beyond <em className="italic text-muted">the noise,</em> we pin{" "}
+          <em className="italic text-muted">the work down.</em>
         </h1>
 
-        <p className="animate-fade-rise-delay mt-8 max-w-2xl font-inter text-base leading-relaxed text-[#6F6F6F] sm:text-lg">
+        <p className="animate-fade-rise-delay mt-8 max-w-2xl font-inter text-base leading-relaxed text-muted sm:text-lg">
           A minimal board for lists and cards, built for focused teams. Through
           the noise, we craft a calm space for deep work and clear flow.
         </p>
 
         <Link
           href={isLoggedIn ? "/boards" : "/register"}
-          className="animate-fade-rise-delay-2 mt-12 rounded-full bg-[#000000] px-14 py-5 text-base text-[#FFFFFF] transition-transform hover:scale-[1.03]"
+          className="animate-fade-rise-delay-2 mt-12 rounded-full bg-ink px-14 py-5 text-base text-bone transition-transform hover:scale-[1.03]"
         >
           {isLoggedIn ? "Go to your boards" : "Begin Journey"}
         </Link>

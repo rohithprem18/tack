@@ -19,6 +19,39 @@
   --font-inter: "Inter", var(--font-geist-sans), sans-serif;
 }
 
+/* Dark theme (#4): same bone & pine character, flipped. The utilities reference
+   the tokens above as var(--color-*), so overriding the tokens under .dark flips
+   every token-based color in the app. Unlayered rules beat the @theme layer. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  --color-bone: #161513;
+  --color-surface: #201f1c;
+  --color-background: #161513;
+  --color-ink: #ece9e1;
+  --color-muted: #a09c93;
+  --color-rule: #33312c;
+  --color-pine: #8fd0c6;
+  --color-tint: #24332f;
+  --color-danger: #e08a80;
+}
+
+/* No stored choice and JavaScript off: follow the system preference. An explicit
+   .light class on <html> opts out of this. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --color-bone: #161513;
+    --color-surface: #201f1c;
+    --color-background: #161513;
+    --color-ink: #ece9e1;
+    --color-muted: #a09c93;
+    --color-rule: #33312c;
+    --color-pine: #8fd0c6;
+    --color-tint: #24332f;
+    --color-danger: #e08a80;
+  }
+}
+
 body {
   background: var(--color-bone);
   color: var(--color-ink);
