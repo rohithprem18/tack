@@ -106,7 +106,7 @@ Thanks to everyone who has helped build this project!
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14%"><a href="https://github.com/rohithprem18"><img src="https://avatars.githubusercontent.com/u/146315115?v=4&s=100" width="80" height="80" alt="rohithprem18"/><br /><sub><b>rohithprem18</b></sub></a><br /><sub>30 commits</sub></td>
+      <td align="center" valign="top" width="14%"><a href="https://github.com/rohithprem18"><img src="https://avatars.githubusercontent.com/u/146315115?v=4&s=100" width="80" height="80" alt="rohithprem18"/><br /><sub><b>rohithprem18</b></sub></a><br /><sub>31 commits</sub></td>
     </tr>
   </tbody>
 </table>
